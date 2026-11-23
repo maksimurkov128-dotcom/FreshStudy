@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreshStudy — Мини-конспекты и тренажёры для 8 класса</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Плавные анимации появления */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-view {
+      animation: fadeSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.95); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .animate-pop {
+      animation: popIn 0.22s ease-out forwards;
+    }
+
+    /* Кастомный скроллбар */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    /* Стили для формул и дробей */
+    .math-formula {
+      font-family: 'Inter', monospace;
+      background: #F1F5F9;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      color: #312E81;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-950">
+
+  <!-- Уведомление Toast (вместо alert) -->
+  <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[92%] max-w-md flex flex-col items-center gap-2"></div>
+
+  <!-- Шапка приложения (Header) -->
+  <header id="app-header" class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 hidden">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <!-- Логотип -->
+      <button onclick="navigateHome()" class="flex items-center gap-2.5 group focus:outline-none">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-500 to-indigo-600 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="flex flex-col text-left">
+          <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-slate-900 via-indigo-950 to-emerald-700 bg-clip-text text-transparent">
+            FreshStudy
+          </span>
+          <span class="text-[10px] font-medium text-slate-400 -mt-1 hidden sm:block">Экспресс-подготовка</span>
+        </div>
+      </button>
+
+      <!-- Правая часть: Прогресс и смена класса -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Счетчик прогресса -->
+        <div class="flex items-center gap-2 bg-slate-100/90 px-3 py-1.5 rounded-xl border border-slate-200/60" title="Изучено тем">
+          <div class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700">
+            <span id="header-progress-count" class="text-emerald-600 font-bold">0</span> / <span id="header-total-topics">12</span> тем
+          </span>
+        </div>
+
+        <!-- Бейдж текущего класса -->
+        <button onclick="openGradeSelector()" class="flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 active:scale-95 text-indigo-700 font-semibold text-xs sm:text-sm px-3 py-1.5 rounded-xl border border-indigo-200/70 transition-all cursor-pointer">
+          <span id="header-grade-badge">8 класс</span>
+          <svg class="w-3.5 h-3.5 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Основной контейнер -->
+  <main id="app-root" class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <!-- Контент рендерится динамически через JS -->
+  </main>
+
+  <!-- Футер -->
+  <footer class="border-t border-slate-200/70 bg-white/60 mt-auto">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+      <div class="flex items-center gap-1.5">
+        <span class="font-semibold text-slate-600">FreshStudy</span>
+        <span>• Дочерний проект электронного дневника</span>
+      </div>
+      <div>Версия MVP 1.0 • Программа 8 класса</div>
+    </div>
+  </footer>
+
+  <script>
+    // =========================================================================
+    // БАЗА УЧЕБНОГО КОНТЕНТА (8 КЛАСС: 6 ПРЕДМЕТОВ, 12 ТЕМ, 132 ЗАДАЧИ)
+    // =========================================================================
+    const CURRICULUM_8 = [
+      {
+        id: 'algebra',
+        name: 'Алгебра',
+        description: 'Квадратные уравнения, дискриминант и теорема Виета',
+        color: 'indigo',
+        badgeBg: 'bg-indigo-50',
+        badgeText: 'text-indigo-600',
+        borderHover: 'hover:border-indigo-300',
+        iconBg: 'bg-gradient-to-br from-indigo-500 to-blue-600',
+        iconSvg: `<svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"/><path d="M4 15c3-8 6-8 9 0s6 8 7-4"/><path d="M12 4v16"/></svg>`,
+        topics: [
+          {
+            id: 'alg-discriminant',
+            title: 'Квадратные уравнения и дискриминант',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Общий вид квадратного уравнения',
+                text: 'Уравнение вида <span class="math-formula">ax² + bx + c = 0</span>, где <span class="math-formula">a ≠ 0</span>. Числа <b>a, b, c</b> — коэффициенты (<b>a</b> — старший, <b>b</b> — второй, <b>c</b> — свободный член).'
+              },
+              {
+                heading: 'Формула дискриминанта',
+                text: 'Дискриминант показывает, сколько корней имеет уравнение:<br><span class="math-formula mt-1">D = b² − 4ac</span>'
+              },
+              {
+                heading: 'Количество корней и формула нахождения',
+                list: [
+                  'Если <b>D > 0</b> — два различных корня: <span class="math-formula">x₁,₂ = (−b ± √D) / (2a)</span>',
+                  'Если <b>D = 0</b> — один корень (два совпадающих): <span class="math-formula">x = −b / (2a)</span>',
+                  'Если <b>D < 0</b> — действительных корней нет!'
+                ]
+              }
+            ],
+            rhyme: {
+              title: 'Запоминалка про дискриминант',
+              lines: [
+                'Чтобы корни отыскать,',
+                'Надо «Дэ» сперва узнать:',
+                '«Бэ» в квадрате, минус в нём',
+                'Четыре «а» на «цэ» берём!',
+                'Если «Дэ» у нас с плюсом — два корня найдём,',
+                'Равен нулю — лишь один мы берём,',
+                'Меньше нуля — не решай, не грусти:',
+                'Корней здесь вообще никогда не найти!'
+              ]
+            },
+            questions: [
+              {
+                type: 'choice',
+                q: 'Чему равен старший коэффициент a в уравнении 5x² − 7x + 2 = 0?',
+                options: ['5', '-7', '2', '0'],
+                answer: 0,
+                explanation: 'Старший коэффициент a стоит перед x². В данном уравнении это 5.'
+              },
+              {
+                type: 'choice',
+                q: 'Вычислите дискриминант уравнения x² − 5x + 6 = 0.',
+                options: ['1', '49', '-1', '25'],
+                answer: 0,
+                explanation: 'D = b² − 4ac = (−5)² − 4·1·6 = 25 − 24 = 1.'
+              },
+              {
+                type: 'choice',
+                q: 'Сколько действительных корней имеет уравнение 2x² + 3x + 5 = 0?',
+                options: ['Нет корней', 'Один корень', 'Два корня', 'Бесконечно много'],
+                answer: 0,
+                explanation: 'D = 3² − 4·2·5 = 9 − 40 = −31 < 0. Так как D < 0, корней нет.'
+              },
+              {
+                type: 'input',
+                q: 'Найдите дискриминант уравнения x² + 6x + 9 = 0 (введите число):',
+                correctText: ['0'],
+                explanation: 'D = 6² − 4·1·9 = 36 − 36 = 0.'
+              },
+              {
+                type: 'choice',
+                q: 'Найдите корни уравнения x² − 5x + 6 = 0.',
+                options: ['2 и 3', '-2 и -3', '1 и 6', '-1 и 6'],
+                answer: 0,
+                explanation: 'D = 1. x₁ = (5 − 1)/2 = 2, x₂ = (5 + 1)/2 = 3.'
+              },
+              {
+                type: 'choice',
+                q: 'Чему равен коэффициент b в уравнении 3x² − x − 4 = 0?',
+                options: ['-1', '1', '3', '-4'],
+                answer: 0,
+                explanation: 'Перед x стоит знак минус без числа, это означает коэффициент −1.'
+              },
+              {
+                type: 'input',
+                q: 'Найдите единственный корень уравнения x² − 8x + 16 = 0:',
+                correctText: ['4'],
+                explanation: 'D = 64 − 64 = 0. x = −(−8) / (2·1) = 8 / 2 = 4.'
+              },
+              {
+                type: 'choice',
+                q: 'Дискриминант квадратного уравнения равен 49. Чему равен √D?',
+                options: ['7', '49', '24.5', '14'],
+                answer: 0,
+                explanation: 'Арифметический квадратный корень из 49 равен 7, так как 7² = 49.'
+              },
+              {
+                type: 'choice',
+                q: 'Укажите верную формулу дискриминанта:',
+                options: ['D = b² − 4ac', 'D = b² + 4ac', 'D = b − 4ac', 'D = 2b − 4ac'],
+                answer: 0,
+                explanation: 'Классическая формула дискриминанта: D = b² − 4ac.'
+              },
+              {
+                type: 'choice',
+                q: 'Найдите больший корень уравнения x² − 2x − 8 = 0.',
+                options: ['4', '-2', '8', '2'],
+                answer: 0,
+                explanation: 'D = 4 − 4·1·(−8) = 36. x₁ = (2 + 6)/2 = 4, x₂ = (2 − 6)/2 = −2. Больший корень равен 4.'
+              },
+              {
+                type: 'input',
+                q: 'Вычислите дискриминант уравнения 2x² − 7x + 3 = 0:',
+                correctText: ['25'],
+                explanation: 'D = (−7)² − 4·2·3 = 49 − 24 = 25.'
+              },
+              {
+                type: 'choice',
+                q: 'При каком условии квадратное уравнение имеет ровно один корень?',
+                options: ['D = 0', 'D > 0', 'D < 0', 'a = 0'],
+                answer: 0,
+                explanation: 'Когда D = 0, слагаемое ±√D обнуляется, и остаётся один корень x = −b/(2a).'
+              }
+            ]
+          },
+          {
+            id: 'alg-vieta',
+            title: 'Теорема Виета',
+            readTime: '2 мин',
+            summary: [
+              {
+                heading: 'Приведённое квадратное уравнение',
+                text: 'Уравнение называется <b>приведённым</b>, если старший коэффициент <span class="math-formula">a = 1</span>:<br><span class="math-formula mt-1">x² + px + q = 0</span>'
+              },
+              {
+                heading: 'Формулировка теоремы Виета',
+                text: 'Если <span class="math-formula">D ≥ 0</span>, то сумма и произведение корней равны:',
+                list: [
+                  'Сумма корней: <span class="math-formula">x₁ + x₂ = −p</span> (второй коэффициент с противоположным знаком)',
+                  'Произведение корней: <span class="math-formula">x₁ · x₂ = q</span> (свободный член со своим знаком)'
+                ]
+              },
+              {
+                heading: 'Лайфхак для подбора корней',
+                text: 'Сначала смотри на произведение <b>q</b> (разложи на множители), а затем проверь их сумму: она должна дать <b>−p</b>.'
+              }
+            ],
+            rhyme: {
+              title: 'Правило Франсуа Виета',
+              lines: [
+                'Если «а» равно единице,',
+                'Дискриминант считать не годится!',
+                'Сумма корней — минус «пэ» посмотри,',
+                'А произведение — «ку» бери!',
+                'Знаки не путай, смелее считай —',
+                'Корни в уме за секунду решай!'
+              ]
+            },
+            questions: [
+              {
+                type: 'choice',
+                q: 'Чему равна сумма корней уравнения x² − 9x + 14 = 0?',
+                options: ['9', '-9', '14', '-14'],
+                answer: 0,
+                explanation: 'По теореме Виета x₁ + x₂ = −p = −(−9) = 9.'
+              },
+              {
+                type: 'choice',
+                q: 'Чему равно произведение корней уравнения x² + 7x − 18 = 0?',
+                options: ['-18', '18', '-7', '7'],
+                answer: 0,
+                explanation: 'По теореме Виета x₁ · x₂ = q = −18.'
+              },
+              {
+                type: 'choice',
+                q: 'Подберите корни уравнения x² − 7x + 12 = 0.',
+                options: ['3 и 4', '-3 и -4', '2 и 6', '1 и 12'],
+                answer: 0,
+                explanation: '3 · 4 = 12, а 3 + 4 = 7. Значит корни 3 и 4.'
+              },
+              {
+                type: 'input',
+                q: 'Один из корней уравнения x² − 11x + 24 = 0 равен 3. Чему равен второй корень?',
+                correctText: ['8'],
+                explanation: 'x₁ + x₂ = 11 ⇒ 3 + x₂ = 11 ⇒ x₂ = 8 (проверка: 3 · 8 = 24).'
+              },
+              {
+                type: 'choice',
+                q: 'Подберите корни уравнения x² + 5x + 6 = 0.',
+                options: ['-2 и -3', '2 и 3', '-1 и -6', '1 и 6'],
+                answer: 0,
+                explanation: '(−2) · (−3) = 6, и (−2) + (−3) = −5.'
+              },
+              {
+                type: 'choice',
+                q: 'Какое из уравнений является приведённым?',
+                options: ['x² − 4x + 1 = 0', '2x² − 4x + 1 = 0', '-x² + 3x = 0', '5x² = 0'],
+                answer: 0,
+                explanation: 'Приведённое уравнение имеет коэффициент a = 1 перед x².'
+              },
+              {
+                type: 'input',
+                q: 'Один из корней уравнения x² + 2x − 15 = 0 равен 3. Введите второй корень:',
+                correctText: ['-5'],
+                explanation: 'x₁ · x₂ = −15 ⇒ 3 · x₂ = −15 ⇒ x₂ = −5.'
+              },
+              {
+                type: 'choice',
+                q: 'Составьте приведённое квадратное уравнение с корнями 2 и 5.',
+                options: ['x² − 7x + 10 = 0', 'x² + 7x + 10 = 0', 'x² − 10x + 7 = 0', 'x² + 3x − 10 = 0'],
+                answer: 0,
+                explanation: 'p = −(2 + 5) = −7, q = 2 · 5 = 10. Уравнение: x² − 7x + 10 = 0.'
+              },
+              {
+                type: 'choice',
+                q: 'Найдите сумму корней уравнения x² + 13x − 30 = 0.',
+                options: ['-13', '13', '-30', '30'],
+                answer: 0,
+                explanation: 'Сумма корней равна −p, то есть −13.'
+              },
+              {
+                type: 'choice',
+                q: 'Подберите корни уравнения x² − x − 6 = 0.',
+                options: ['3 и -2', '-3 и 2', '6 и -1', '-6 и 1'],
+                answer: 0,
+                explanation: '3 · (−2) = −6, и 3 + (−2) = 1 (противоположно p = −1).'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'geometry',
+        name: 'Геометрия',
+        description: 'Теорема Пифагора и площади многоугольников',
+        color: 'emerald',
+        badgeBg: 'bg-emerald-50',
+        badgeText: 'text-emerald-600',
+        borderHover: 'hover:border-emerald-300',
+        iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
+        iconSvg: `<svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 20 21 20 3 4 3 20"/><path d="M3 15h5v5"/></svg>`,
+        topics: [
+          {
+            id: 'geo-pythagoras',
+            title: 'Теорема Пифагора',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Формулировка теоремы',
+                text: 'В прямоугольном треугольнике квадрат гипотенузы равен сумме квадратов катетов:<br><span class="math-formula mt-1">c² = a² + b²</span>'
+              },
+              {
+                heading: 'Как найти неизвестную сторону',
+                list: [
+                  'Гипотенуза: <span class="math-formula">c = √(a² + b²)</span>',
+                  'Катет: <span class="math-formula">a = √(c² − b²)</span>'
+                ]
+              },
+              {
+                heading: 'Пифагоровы тройки (запомни для скорости!)',
+                text: 'Прямоугольные треугольники с целыми сторонами: <b>(3, 4, 5)</b> — египетский треугольник, а также <b>(6, 8, 10)</b>, <b>(5, 12, 13)</b>, <b>(8, 15, 17)</b>.'
+              }
+            ],
+            rhyme: {
+              title: 'Бессмертная классика геометрии',
+              lines: [
+                'Пифагоровы штаны',
+                'Во все стороны равны!',
+                'Катет в квадрат, второй в квадрат —',
+                'Сложи их смело, каждый рад:',
+                'Ведь сумма эта без труда',
+                'Квадрат гипотенузы даст всегда!'
+              ]
+            },
+            questions: [
+              {
+                type: 'input',
+                q: 'Катеты прямоугольного треугольника равны 3 и 4. Чему равна гипотенуза?',
+                correctText: ['5'],
+                explanation: 'c² = 3² + 4² = 9 + 16 = 25 ⇒ c = 5 (египетский треугольник).'
+              },
+              {
+                type: 'input',
+                q: 'Гипотенуза равна 10, один из катетов равен 6. Найдите второй катет:',
+                correctText: ['8'],
+                explanation: 'b² = 10² − 6² = 100 − 36 = 64 ⇒ b = 8.'
+              },
+              {
+                type: 'choice',
+                q: 'Какой треугольник называется египетским?',
+                options: ['Со сторонами 3, 4, 5', 'Равносторонний', 'Со сторонами 2, 3, 4', 'С углами 45°, 45°, 90°'],
+                answer: 0,
+                explanation: 'Египетский треугольник — это прямоугольный треугольник со сторонами 3, 4 и 5.'
+              },
+              {
+                type: 'input',
+                q: 'Катеты прямоугольного треугольника равны 5 и 12. Найдите гипотенузу:',
+                correctText: ['13'],
+                explanation: 'c² = 5² + 12² = 25 + 144 = 169 ⇒ c = 13.'
+              },
+              {
+                type: 'choice',
+                q: 'Является ли треугольник со сторонами 6, 8 и 10 прямоугольным?',
+                options: ['Да, является', 'Нет, не является', 'Только если он равнобедренный', 'Невозможно определить'],
+                answer: 0,
+                explanation: 'Проверяем по обратной теореме Пифагора: 6² + 8² = 36 + 64 = 100 = 10². Да!'
+              },
+              {
+                type: 'input',
+                q: 'Найдите диагональ прямоугольника со сторонами 8 см и 15 см (в см):',
+                correctText: ['17'],
+                explanation: 'Диагональ делит прямоугольник на два прямоугольных треугольника: d = √(8² + 15²) = √(64 + 225) = √289 = 17.'
+              },
+              {
+                type: 'choice',
+                q: 'Как правильно выразить катет a через гипотенузу c и катет b?',
+                options: ['a = √(c² − b²)', 'a = √(c² + b²)', 'a = c − b', 'a = √(b² − c²)'],
+                answer: 0,
+                explanation: 'Из c² = a² + b² следует a² = c² − b², откуда a = √(c² − b²).'
+              },
+              {
+                type: 'choice',
+                q: 'Сторона квадрата равна 5. Чему равна его диагональ?',
+                options: ['5√2', '10', '25', '√10'],
+                answer: 0,
+                explanation: 'd² = 5² + 5² = 50 ⇒ d = √50 = 5√2.'
+              },
+              {
+                type: 'input',
+                q: 'В равнобедренном треугольнике боковая сторона равна 10, а основание 12. Найдите высоту, проведённую к основанию:',
+                correctText: ['8'],
+                explanation: 'Высота делит основание пополам (по 6). Из прямоугольного треугольника: h = √(10² − 6²) = 8.'
+              },
+              {
+                type: 'choice',
+                q: 'Какая из троек чисел НЕ является пифагоровой?',
+                options: ['(4, 5, 6)', '(3, 4, 5)', '(5, 12, 13)', '(9, 12, 15)'],
+                answer: 0,
+                explanation: '4² + 5² = 16 + 25 = 41 ≠ 36 (6²).'
+              },
+              {
+                type: 'input',
+                q: 'Гипотенуза равна 13, один из катетов равен 12. Найдите второй катет:',
+                correctText: ['5'],
+                explanation: 'a = √(13² − 12²) = √(169 − 144) = √25 = 5.'
+              },
+              {
+                type: 'choice',
+                q: 'Теорема Пифагора применима:',
+                options: ['Только для прямоугольных треугольников', 'Для любых треугольников', 'Только для равносторонних треугольников', 'Для тупоугольных треугольников'],
+                answer: 0,
+                explanation: 'Теорема Пифагора работает исключительно в прямоугольных треугольниках.'
+              }
+            ]
+          },
+          {
+            id: 'geo-areas',
+            title: 'Площади многоугольников',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Основные формулы площадей',
+                list: [
+                  '<b>Параллелограмм:</b> <span class="math-formula">S = a · h</span> (основание на высоту)',
+                  '<b>Треугольник:</b> <span class="math-formula">S = ½ · a · h</span> (половина произведения основания на высоту)',
+                  '<b>Прямоугольный треугольник:</b> <span class="math-formula">S = ½ · a · b</span> (половина произведения катетов)',
+                  '<b>Ромб:</b> <span class="math-formula">S = ½ · d₁ · d₂</span> (половина произведения диагоналей)',
+                  '<b>Трапеция:</b> <span class="math-formula">S = ((a + b) / 2) · h</span> (полусумма оснований на высоту)'
+                ]
+              },
+              {
+                heading: 'Важное свойство',
+                text: 'Если у двух треугольников равны высоты, то их площади относятся как основания.'
+              }
+            ],
+            rhyme: {
+              title: 'Стишок про площадь трапеции и треугольника',
+              lines: [
+                'У трапеции секрет —',
+                'Формулы проще в мире нет:',
+                'Основания сложи,',
+                'Пополам их раздели,',
+                'На высоту умножь потом —',
+                'И площадь сразу мы найдём!'
+              ]
+            },
+            questions: [
+              {
+                type: 'input',
+                q: 'Основание параллелограмма равно 8 см, а высота, проведённая к нему, равна 5 см. Найдите площадь (в см²):',
+                correctText: ['40'],
+                explanation: 'S = a · h = 8 · 5 = 40 см².'
+              },
+              {
+                type: 'input',
+                q: 'Основание треугольника равно 10 см, высота равна 6 см. Чему равна его площадь?',
+                correctText: ['30'],
+                explanation: 'S = ½ · a · h = ½ · 10 · 6 = 30 см².'
+              },
+              {
+                type: 'input',
+                q: 'Основания трапеции равны 4 см и 8 см, а высота равна 5 см. Найдите площадь трапеции:',
+                correctText: ['30'],
+                explanation: 'S = ((4 + 8) / 2) · 5 = 6 · 5 = 30 см².'
+              },
+              {
+                type: 'input',
+                q: 'Диагонали ромба равны 6 см и 10 см. Найдите площадь ромба:',
+                correctText: ['30'],
+                explanation: 'S = ½ · d₁ · d₂ = ½ · 6 · 10 = 30 см².'
+              },
+              {
+                type: 'choice',
+                q: 'Катеты прямоугольного треугольника равны 7 и 4. Чему равна его площадь?',
+                options: ['14', '28', '11', '7'],
+                answer: 0,
+                explanation: 'S = ½ · 7 · 4 = 14.'
+              },
+              {
+                type: 'choice',
+                q: 'Как изменится площадь квадрата, если его сторону увеличить в 3 раза?',
+                options: ['Увеличится в 9 раз', 'Увеличится в 3 раза', 'Увеличится в 6 раз', 'Не изменится'],
+                answer: 0,
+                explanation: 'S = a². Если сторону увеличить в 3 раза: (3a)² = 9a², площадь вырастет в 9 раз.'
+              },
+              {
+                type: 'input',
+                q: 'Площадь параллелограмма равна 48, а одна из его сторон равна 12. Найдите высоту, проведённую к этой стороне:',
+                correctText: ['4'],
+                explanation: 'h = S / a = 48 / 12 = 4.'
+              },
+              {
+                type: 'choice',
+                q: 'Средняя линия трапеции равна 7 см, а высота — 4 см. Чему равна площадь трапеции?',
+                options: ['28 см²', '14 см²', '56 см²', '11 см²'],
+                answer: 0,
+                explanation: 'Средняя линия равна полусумме оснований: m = (a+b)/2 = 7. Тогда S = m · h = 7 · 4 = 28 см².'
+              },
+              {
+                type: 'input',
+                q: 'Периметр квадрата равен 24 см. Найдите его площадь (в см²):',
+                correctText: ['36'],
+                explanation: 'Сторона квадрата a = 24 / 4 = 6 см. Площадь S = 6² = 36 см².'
+              },
+              {
+                type: 'choice',
+                q: 'По какой формуле вычисляется площадь ромба через его диагонали?',
+                options: ['S = ½ · d₁ · d₂', 'S = d₁ · d₂', 'S = (d₁ + d₂) / 2', 'S = d₁² + d₂²'],
+                answer: 0,
+                explanation: 'Площадь ромба равна половине произведения его диагоналей.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'physics',
+        name: 'Физика',
+        description: 'Тепловые явления и электрический ток (Закон Ома)',
+        color: 'amber',
+        badgeBg: 'bg-amber-50',
+        badgeText: 'text-amber-700',
+        borderHover: 'hover:border-amber-300',
+        iconBg: 'bg-gradient-to-br from-amber-500 to-orange-600',
+        iconSvg: `<svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+        topics: [
+          {
+            id: 'phys-heat',
+            title: 'Количество теплоты. Удельная теплоёмкость',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Формула количества теплоты при нагревании / охлаждении',
+                text: '<span class="math-formula">Q = c · m · (t₂ − t₁) = c · m · Δt</span><br>где <b>Q</b> — количество теплоты (Дж), <b>c</b> — удельная теплоёмкость (Дж/(кг·°C)), <b>m</b> — масса (кг), <b>Δt</b> — изменение температуры (°C).'
+              },
+              {
+                heading: 'Физический смысл удельной теплоёмкости (c)',
+                text: 'Показывает, сколько джоулей теплоты нужно передать <b>1 кг</b> вещества, чтобы нагреть его на <b>1 °C</b>. У воды огромная теплоёмкость: <span class="math-formula">c = 4200 Дж/(кг·°C)</span>.'
+              },
+              {
+                heading: 'Другие тепловые процессы',
+                list: [
+                  'Сгорание топлива: <span class="math-formula">Q = q · m</span> (q — удельная теплота сгорания)',
+                  'Плавление / кристаллизация: <span class="math-formula">Q = λ · m</span> (λ — удельная теплота плавления)',
+                  'Парообразование / конденсация: <span class="math-formula">Q = L · m</span> (L — удельная теплота парообразования)'
+                ]
+              }
+            ],
+            rhyme: {
+              title: 'Запоминалка для формулы теплоты',
+              lines: [
+                'Чтобы тело нам нагреть,',
+                'Надо формулу иметь:',
+                '«Ку» равно «цэ-эм-дельта-тэ» —',
+                'Запомни это в темноте!',
+                '«Цэ» — табличный наш дружок,',
+                '«Эм» — килограммов точный вес,',
+                'А «дельта-тэ» — на сколько градусов',
+                'Термометр вверх полез!'
+              ]
+            },
+            questions: [
+              {
+                type: 'choice',
+                q: 'В каких единицах в системе СИ измеряется количество теплоты Q?',
+                options: ['Джоуль (Дж)', 'Ватт (Вт)', 'Кельвин (К)', 'Ньютон (Н)'],
+                answer: 0,
+                explanation: 'Количество теплоты — это энергия, в СИ она измеряется в Джоулях (Дж).'
+              },
+              {
+                type: 'input',
+                q: 'Сколько теплоты (в Дж) нужно, чтобы нагреть 2 кг воды на 1 °C? (c воды = 4200 Дж/(кг·°C))',
+                correctText: ['8400'],
+                explanation: 'Q = c · m · Δt = 4200 · 2 · 1 = 8400 Дж.'
+              },
+              {
+                type: 'choice',
+                q: 'Как передаётся тепло от Солнца к Земле через космический вакуум?',
+                options: ['Излучением', 'Теплопроводностью', 'Конвекцией', 'Диффузией'],
+                answer: 0,
+                explanation: 'Конвекция и теплопроводность требуют наличия вещества, а излучение распространяется даже в вакууме.'
+              },
+              {
+                type: 'input',
+                q: 'Металлический брусок массой 1 кг нагрели на 10 °C, затратив 5000 Дж энергии. Чему равна его удельная теплоёмкость (в Дж/(кг·°C))?',
+                correctText: ['500'],
+                explanation: 'c = Q / (m · Δt) = 5000 / (1 · 10) = 500 Дж/(кг·°C).'
+              },
+              {
+                type: 'choice',
+                q: 'Что происходит с температурой кристаллического тела (например, льда) во время плавления?',
+                options: ['Остаётся постоянной', 'Повышается', 'Понижается', 'Сначала растёт, потом падает'],
+                answer: 0,
+                explanation: 'Во время плавления вся подводимая энергия идёт на разрушение кристаллической решётки, поэтому температура не меняется.'
+              },
+              {
+                type: 'choice',
+                q: 'По какой формуле рассчитывается количество теплоты при сгорании топлива?',
+                options: ['Q = q · m', 'Q = c · m · Δt', 'Q = λ · m', 'Q = I · U · t'],
+                answer: 0,
+                explanation: 'Количество теплоты при полном сгорании топлива равно Q = q · m.'
+              },
+              {
+                type: 'input',
+                q: 'Воду массой 0,5 кг нагрели от 20 °C до 40 °C. Сколько кДж теплоты потребовалось? (c = 4200 Дж/(кг·°C), ответ в кДж)',
+                correctText: ['42'],
+                explanation: 'Q = 4200 · 0,5 · (40 − 20) = 4200 · 10 = 42 000 Дж = 42 кДж.'
+              },
+              {
+                type: 'choice',
+                q: 'Какой вид теплопередачи невозможен в твёрдых телах?',
+                options: ['Конвекция', 'Теплопроводность', 'Излучение', 'Все возможны'],
+                answer: 0,
+                explanation: 'Конвекция — это перенос энергии струями жидкости или газа, в твёрдых телах частицы не могут свободно перемещаться.'
+              },
+              {
+                type: 'choice',
+                q: 'Почему батареи отопления устанавливают внизу под окнами?',
+                options: ['Для эффективной конвекции воздуха в комнате', 'Чтобы не мешали шторам', 'Из-за теплопроводности пола', 'Чтобы меньше грели потолок излучением'],
+                answer: 0,
+                explanation: 'Тёплый воздух от батареи поднимается вверх, а холодный от окна опускается вниз — возникает конвекционный поток.'
+              },
+              {
+                type: 'choice',
+                q: 'Удельная теплоёмкость меди равна 400 Дж/(кг·°C). Что это означает?',
+                options: ['Для нагревания 1 кг меди на 1 °C требуется 400 Дж', '1 кг меди при плавлении поглощает 400 Дж', '400 кг меди нагреваются на 1 °C за 1 секунду', 'Температура плавления меди 400 °C'],
+                answer: 0,
+                explanation: 'Удельная теплоёмкость численно равна энергии, необходимой для нагрева 1 кг вещества на 1 °C.'
+              }
+            ]
+          },
+          {
+            id: 'phys-ohm',
+            title: 'Закон Ома для участка цепи',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Три главные электрические величины',
+                list: [
+                  '<b>Сила тока (I)</b> — измеряется в Амперах (А) амперметром (включается <i>последовательно</i>).',
+                  '<b>Напряжение (U)</b> — измеряется в Вольтах (В) вольтметром (включается <i>параллельно</i>).',
+                  '<b>Сопротивление (R)</b> — измеряется в Омах (Ом). Зависит от материала, длины и толщины проводника: <span class="math-formula">R = ρ · l / S</span>.'
+                ]
+              },
+              {
+                heading: 'Закон Ома для участка цепи',
+                text: 'Сила тока прямо пропорциональна напряжению и обратно пропорциональна сопротивлению:<br><span class="math-formula mt-1">I = U / R</span> &nbsp;⇒&nbsp; <span class="math-formula">U = I · R</span> &nbsp;⇒&nbsp; <span class="math-formula">R = U / I</span>'
+              },
+              {
+                heading: 'Соединения проводников',
+                list: [
+                  '<b>Последовательное:</b> <span class="math-formula">I = I₁ = I₂</span>, <span class="math-formula">U = U₁ + U₂</span>, <span class="math-formula">R = R₁ + R₂</span>',
+                  '<b>Параллельное:</b> <span class="math-formula">U = U₁ = U₂</span>, <span class="math-formula">I = I₁ + I₂</span>, <span class="math-formula">1/R = 1/R₁ + 1/R₂</span>'
+                ]
+              }
+            ],
+            rhyme: {
+              title: 'Треугольник Закона Ома',
+              lines: [
+                'Напряжение сверху — как корона на троне,',
+                'А снизу «Ай» и «Эр» сидят в одном вагоне!',
+                'Хочешь «Ай» найти — «У» на «Эр» дели,',
+                'Хочешь «Эр» найти — «У» на «Ай» бери,',
+                'А коль «У» захочешь вдруг узнать —',
+                'Надо «Ай» на «Эр» перемножать!'
+              ]
+            },
+            questions: [
+              {
+                type: 'input',
+                q: 'Напряжение на участке цепи равно 12 В, сопротивление 4 Ом. Найдите силу тока (в А):',
+                correctText: ['3'],
+                explanation: 'По закону Ома: I = U / R = 12 / 4 = 3 А.'
+              },
+              {
+                type: 'input',
+                q: 'Сила тока в лампочке 0,5 А, её сопротивление 20 Ом. Какое напряжение (в В) подано на лампочку?',
+                correctText: ['10'],
+                explanation: 'U = I · R = 0,5 · 20 = 10 В.'
+              },
+              {
+                type: 'choice',
+                q: 'Как подключается амперметр в электрическую цепь?',
+                options: ['Последовательно с прибором', 'Параллельно прибору', 'Напрямую к полюсам батарейки без нагрузки', 'Любым способом'],
+                answer: 0,
+                explanation: 'Амперметр имеет очень малое сопротивление и всегда включается в цепь последовательно.'
+              },
+              {
+                type: 'input',
+                q: 'Два резистора сопротивлением 5 Ом и 7 Ом соединены последовательно. Чему равно общее сопротивление (в Ом)?',
+                correctText: ['12'],
+                explanation: 'При последовательном соединении сопротивления складываются: R = 5 + 7 = 12 Ом.'
+              },
+              {
+                type: 'input',
+                q: 'Два одинаковых резистора по 10 Ом соединены параллельно. Чему равно их общее сопротивление (в Ом)?',
+                correctText: ['5'],
+                explanation: '1/R = 1/10 + 1/10 = 2/10 = 1/5 ⇒ R = 5 Ом (для двух одинаковых резисторов Rобщ = R/2).'
+              },
+              {
+                type: 'choice',
+                q: 'Как изменится сопротивление медного провода, если его длину увеличить в 2 раза (при той же толщине)?',
+                options: ['Увеличится в 2 раза', 'Уменьшится в 2 раза', 'Не изменится', 'Увеличится в 4 раза'],
+                answer: 0,
+                explanation: 'R = ρ · l / S. Сопротивление прямо пропорционально длине проводника l.'
+              },
+              {
+                type: 'choice',
+                q: 'Что остаётся одинаковым на всех участках при параллельном соединении?',
+                options: ['Напряжение (U)', 'Сила тока (I)', 'Сопротивление (R)', 'Работа тока'],
+                answer: 0,
+                explanation: 'При параллельном соединении напряжение на всех ветвях одинаково: U = U₁ = U₂.'
+              },
+              {
+                type: 'input',
+                q: 'При напряжении 24 В сила тока в резисторе равна 4 А. Чему равно сопротивление резистора (в Ом)?',
+                correctText: ['6'],
+                explanation: 'R = U / I = 24 / 4 = 6 Ом.'
+              },
+              {
+                type: 'choice',
+                q: 'В каких единицах измеряется электрическое напряжение?',
+                options: ['Вольт (В)', 'Ампер (А)', 'Ом (Ом)', 'Кулон (Кл)'],
+                answer: 0,
+                explanation: 'Напряжение измеряется в Вольтах (В).'
+              },
+              {
+                type: 'choice',
+                q: 'Какой прибор служит для плавного регулирования силы тока в цепи?',
+                options: ['Реостат', 'Вольтметр', 'Электроскоп', 'Гальванометр'],
+                answer: 0,
+                explanation: 'Реостат позволяет изменять длину проводника в цепи, меняя сопротивление и силу тока.'
+              },
+              {
+                type: 'input',
+                q: 'При последовательном соединении двух ламп напряжение на первой 4 В, на второй 8 В. Чему равно общее напряжение (в В)?',
+                correctText: ['12'],
+                explanation: 'U = U₁ + U₂ = 4 + 8 = 12 В.'
+              },
+              {
+                type: 'choice',
+                q: 'Зависит ли сопротивление проводника от напряжения на его концах?',
+                options: ['Нет, не зависит', 'Да, прямо пропорционально', 'Да, обратно пропорционально', 'Зависит только при нагревании'],
+                answer: 0,
+                explanation: 'Сопротивление R — характеристика самого проводника (его материала, длины и сечения), от U и I оно не зависит.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'chemistry',
+        name: 'Химия',
+        description: 'Классы неорганических соединений и молярная масса',
+        color: 'purple',
+        badgeBg: 'bg-purple-50',
+        badgeText: 'text-purple-600',
+        borderHover: 'hover:border-purple-300',
+        iconBg: 'bg-gradient-to-br from-purple-500 to-fuchsia-600',
+        iconSvg: `<svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v5.5L4.5 18a2 2 0 0 0 1.7 3h11.6a2 2 0 0 0 1.7-3L14 8.5V3"/><path d="M7 14h10"/></svg>`,
+        topics: [
+          {
+            id: 'chem-classes',
+            title: 'Основные классы неорганических соединений',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Четыре главных класса веществ',
+                list: [
+                  '<b>Оксиды</b> — бинарные соединения (из 2 элементов), где один — <b>кислород (O)</b> в степени окисления −2. Примеры: <span class="math-formula">CO₂, CaO, H₂O</span>.',
+                  '<b>Кислоты</b> — состоят из атомов <b>водорода (H)</b> и кислотного остатка. Примеры: <span class="math-formula">HCl, H₂SO₄, HNO₃</span>.',
+                  '<b>Основания</b> — состоят из атома <b>металла</b> и одной или нескольких гидроксогрупп <b>(OH)</b>. Растворимые основания называются <i>щёлочи</i>. Примеры: <span class="math-formula">NaOH, Ca(OH)₂</span>.',
+                  '<b>Соли</b> — состоят из атомов <b>металла</b> и <b>кислотного остатка</b>. Примеры: <span class="math-formula">NaCl, CaCO₃, CuSO₄</span>.'
+                ]
+              },
+              {
+                heading: 'Индикаторы в кислотах и щелочах',
+                text: '• <b>Лакмус:</b> в кислоте — <i>красный</i>, в щёлочи — <i>синий</i>.<br>• <b>Фенолфталеин:</b> в кислоте — <i>бесцветный</i>, в щёлочи — <i>малиновый</i>.<br>• <b>Метилоранж:</b> в кислоте — <i>розовый/красный</i>, в щёлочи — <i>жёлтый</i>.'
+              }
+            ],
+            rhyme: {
+              title: 'Химическая запоминалка про индикаторы',
+              lines: [
+                'Индикатор лакмус красный',
+                'Кислоту укажет ясно!',
+                'Индикатор лакмус синий —',
+                'Щёлочь здесь, не будь разиней!',
+                'А фенолфталеиновый',
+                'В щелочах всегда малиновый!'
+              ]
+            },
+            questions: [
+              {
+                type: 'choice',
+                q: 'К какому классу соединений относится вещество H₂SO₄?',
+                options: ['Кислоты', 'Оксиды', 'Основания', 'Соли'],
+                answer: 0,
+                explanation: 'H₂SO₄ (серная кислота) состоит из атомов водорода и кислотного остатка SO₄.'
+              },
+              {
+                type: 'choice',
+                q: 'Выберите формулу оксида из предложенного списка:',
+                options: ['SO₃', 'NaOH', 'HCl', 'K₂CO₃'],
+                answer: 0,
+                explanation: 'SO₃ (оксид серы VI) состоит из двух элементов, один из которых — кислород.'
+              },
+              {
+                type: 'choice',
+                q: 'Какой цвет приобретает фенолфталеин в растворе щёлочи (например, NaOH)?',
+                options: ['Малиновый', 'Синий', 'Жёлтый', 'Остаётся бесцветным'],
+                answer: 0,
+                explanation: 'Фенолфталеин в щелочной среде становится ярко-малиновым.'
+              },
+              {
+                type: 'choice',
+                q: 'К какому классу веществ относится мел (CaCO₃)?',
+                options: ['Соли', 'Оксиды', 'Основания', 'Кислоты'],
+                answer: 0,
+                explanation: 'CaCO₃ (карбонат кальция) состоит из металла Ca и кислотного остатка CO₃ — это соль.'
+              },
+              {
+                type: 'choice',
+                q: 'Как называются растворимые в воде основания?',
+                options: ['Щёлочи', 'Амфотерные гидроксиды', 'Ангидриды', 'Кристаллогидраты'],
+                answer: 0,
+                explanation: 'Растворимые в воде основания (NaOH, KOH, Ba(OH)₂ и др.) называются щелочами.'
+              },
+              {
+                type: 'choice',
+                q: 'Выберите формулу основания:',
+                options: ['Cu(OH)₂', 'CuO', 'CuSO₄', 'H₂CO₃'],
+                answer: 0,
+                explanation: 'Cu(OH)₂ (гидроксид меди II) состоит из металла и гидроксогрупп OH.'
+              },
+              {
+                type: 'choice',
+                q: 'Какой цвет имеет лакмус в кислой среде?',
+                options: ['Красный', 'Синий', 'Фиолетовый', 'Жёлтый'],
+                answer: 0,
+                explanation: 'В кислотах лакмус меняет фиолетовый цвет на красный.'
+              },
+              {
+                type: 'choice',
+                q: 'Какое вещество лишнее в ряду: NaCl, KNO₃, H₃PO₄, BaSO₄?',
+                options: ['H₃PO₄', 'NaCl', 'KNO₃', 'BaSO₄'],
+                answer: 0,
+                explanation: 'H₃PO₄ — это фосфорная кислота, а остальные три вещества являются солями.'
+              },
+              {
+                type: 'choice',
+                q: 'Сколько химических элементов входит в состав любого оксида?',
+                options: ['Два', 'Три', 'Один', 'Четыре'],
+                answer: 0,
+                explanation: 'Оксиды — это бинарные соединения, состоящие строго из двух элементов, один из которых кислород.'
+              },
+              {
+                type: 'choice',
+                q: 'Укажите формулу соляной кислоты:',
+                options: ['HCl', 'H₂SO₄', 'HNO₃', 'H₂SiO₃'],
+                answer: 0,
+                explanation: 'HCl — хлороводородная (соляная) кислота.'
+              },
+              {
+                type: 'choice',
+                q: 'Что образуется при реакции нейтрализации между кислотой и основанием?',
+                options: ['Соль и вода', 'Оксид и водород', 'Две новые кислоты', 'Только газ'],
+                answer: 0,
+                explanation: 'Кислота + Основание → Соль + Вода (например, HCl + NaOH → NaCl + H₂O).'
+              },
+              {
+                type: 'choice',
+                q: 'Какая кислота является нерастворимой в воде?',
+                options: ['Кремниевая (H₂SiO₃)', 'Серная (H₂SO₄)', 'Азотная (HNO₃)', 'Соляная (HCl)'],
+                answer: 0,
+                explanation: 'H₂SiO₃ — единственная распространённая в школьном курсе нерастворимая кислота (выпадает в виде студенистого осадка).'
+              }
+            ]
+          },
+          {
+            id: 'chem-mole',
+            title: 'Количество вещества. Молярная масса',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Понятие моль и число Авогадро',
+                text: '<b>Количество вещества (n или ν)</b> измеряется в <b>молях</b>. В 1 моль любого вещества содержится одинаковое число частиц — постоянная Авогадро:<br><span class="math-formula mt-1">Nₐ = 6,02 · 10²³ моль⁻¹</span>'
+              },
+              {
+                heading: 'Молярная масса (M)',
+                text: 'Масса 1 моль вещества, измеряется в <b>г/моль</b>. Численно совпадает с относительной молекулярной массой <b>Mᵣ</b> из таблицы Менделеева!'
+              },
+              {
+                heading: 'Три главные расчётные формулы',
+                list: [
+                  'Через массу: <span class="math-formula">n = m / M</span> &nbsp;⇒&nbsp; <span class="math-formula">m = n · M</span>',
+                  'Через число частиц: <span class="math-formula">n = N / Nₐ</span>',
+                  'Через объём газа (при н.у.): <span class="math-formula">n = V / Vₘ</span>, где <span class="math-formula">Vₘ = 22,4 л/моль</span>'
+                ]
+              }
+            ],
+            rhyme: {
+              title: 'Стишок про моли и Авогадро',
+              lines: [
+                'Если хочешь моли знать,',
+                'Массу «эм» надо взять',
+                'И на «Эм» большую смело',
+                'Разделить её умело!',
+                'А для газов при нормальных',
+                'Есть объём на двадцать два и четыре —',
+                'Знает каждый химик в мире!'
+              ]
+            },
+            questions: [
+              {
+                type: 'choice',
+                q: 'В каких единицах измеряется количество вещества?',
+                options: ['моль', 'г/моль', 'грамм', 'литр'],
+                answer: 0,
+                explanation: 'Единица измерения количества вещества в системе СИ — моль.'
+              },
+              {
+                type: 'input',
+                q: 'Чему равна молярная масса воды H₂O (в г/моль)? (Ar(H)=1, Ar(O)=16)',
+                correctText: ['18'],
+                explanation: 'M(H₂O) = 2·1 + 16 = 18 г/моль.'
+              },
+              {
+                type: 'input',
+                q: 'Вычислите количество вещества (в моль), которое составляют 36 г воды (M = 18 г/моль):',
+                correctText: ['2'],
+                explanation: 'n = m / M = 36 / 18 = 2 моль.'
+              },
+              {
+                type: 'choice',
+                q: 'Чему равен молярный объём любого газа при нормальных условиях (н.у.)?',
+                options: ['22,4 л/моль', '6,02 л/моль', '18 л/моль', '100 л/моль'],
+                answer: 0,
+                explanation: 'Молярный объём газов при н.у. Vₘ = 22,4 л/моль.'
+              },
+              {
+                type: 'input',
+                q: 'Какой объём (в литрах) займут 2 моль углекислого газа CO₂ при нормальных условиях?',
+                correctText: ['44,8', '44.8'],
+                explanation: 'V = n · Vₘ = 2 · 22,4 = 44,8 л.'
+              },
+              {
+                type: 'input',
+                q: 'Найдите молярную массу углекислого газа CO₂ (в г/моль). (Ar(C)=12, Ar(O)=16)',
+                correctText: ['44'],
+                explanation: 'M(CO₂) = 12 + 2·16 = 12 + 32 = 44 г/моль.'
+              },
+              {
+                type: 'choice',
+                q: 'Чему равна постоянная Авогадро Nₐ?',
+                options: ['6,02 · 10²³ моль⁻¹', '22,4 · 10²³ моль⁻¹', '3,14 · 10²³ моль⁻¹', '1,6 · 10⁻¹⁹ моль⁻¹'],
+                answer: 0,
+                explanation: 'Постоянная Авогадро равна 6,02 · 10²³ частиц в 1 моль.'
+              },
+              {
+                type: 'input',
+                q: 'Сколько граммов весят 0,5 моль кислорода O₂? (Ar(O)=16)',
+                correctText: ['16'],
+                explanation: 'M(O₂) = 2·16 = 32 г/моль. Масса m = n · M = 0,5 · 32 = 16 г.'
+              },
+              {
+                type: 'choice',
+                q: 'По какой формуле вычисляется масса вещества, если известно его количество n и молярная масса M?',
+                options: ['m = n · M', 'm = n / M', 'm = M / n', 'm = n · Vₘ'],
+                answer: 0,
+                explanation: 'Из формулы n = m / M выражаем массу: m = n · M.'
+              },
+              {
+                type: 'input',
+                q: 'Найдите молярную массу гидроксида натрия NaOH (в г/моль). (Ar(Na)=23, Ar(O)=16, Ar(H)=1)',
+                correctText: ['40'],
+                explanation: 'M(NaOH) = 23 + 16 + 1 = 40 г/моль.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'history',
+        name: 'История',
+        description: 'Дворцовые перевороты и эпоха Екатерины II',
+        color: 'rose',
+        badgeBg: 'bg-rose-50',
+        badgeText: 'text-rose-600',
+        borderHover: 'hover:border-rose-300',
+        iconBg: 'bg-gradient-to-br from-rose-500 to-red-600',
+        iconSvg: `<svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`,
+        topics: [
+          {
+            id: 'hist-coups',
+            title: 'Эпоха дворцовых переворотов (1725–1762)',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Главная причина переворотов',
+                text: 'Указ Петра I о престолонаследии (<b>1722 г.</b>), отменивший передачу трона по старшинству и позволивший императору самому назначать наследника. Пётр умер, не оставив завещания, и судьбу трона стала решать <b>гвардия</b>.'
+              },
+              {
+                heading: 'Хронология правителей (1725–1762)',
+                list: [
+                  '<b>Екатерина I (1725–1727)</b> — жена Петра I; реальная власть у А.Д. Меншикова и Верховного тайного совета.',
+                  '<b>Пётр II (1727–1730)</b> — внук Петра I; ссылка Меншикова, перенос столицы в Москву, умер в 14 лет.',
+                  '<b>Анна Иоанновна (1730–1740)</b> — племянница Петра I; порвала «кондиции» верховников; «бироновщина».',
+                  '<b>Иван VI Антонович (1740–1741)</b> — император-младенец при регентстве Бирона и Анны Леопольдовны.',
+                  '<b>Елизавета Петровна (1741–1761)</b> — дочь Петра I; возведена гвардией; основание МГУ (1755), Семилетняя война.',
+                  '<b>Пётр III (1761–1762)</b> — Манифест о вольности дворянства (1762), свергнут женой Екатериной II.'
+                ]
+              }
+            ],
+            rhyme: {
+              title: 'Порядок правителей за 15 секунд',
+              lines: [
+                'После Петра на трон взошла',
+                'Катюша Первая сперва,',
+                'За ней мальчишка Пётр Второй,',
+                'Затем же — Анна с Бироном злой.',
+                'Младенец Ваня — лишь на год,',
+                'И Лиза власть в свои берёт!',
+                'Затем недолгий Пётр Третий —',
+                'И Екатерина правит светом!'
+              ]
+            },
+            questions: [
+              {
+                type: 'choice',
+                q: 'Какое событие стало главной причиной эпохи дворцовых переворотов?',
+                options: ['Указ Петра I о престолонаследии 1722 г.', 'Отмена крепостного права', 'Смутное время', 'Восстание Емельяна Пугачёва'],
+                answer: 0,
+                explanation: 'Пётр I отменил традиционный порядок наследования, но сам не успел назвать наследника.'
+              },
+              {
+                type: 'choice',
+                q: 'Кто из правителей взошёл на престол сразу после смерти Петра I в 1725 году?',
+                options: ['Екатерина I', 'Анна Иоанновна', 'Елизавета Петровна', 'Пётр II'],
+                answer: 0,
+                explanation: 'При поддержке гвардии и А.Д. Меншикова на престол взошла вдова Петра I — Екатерина I.'
+              },
+              {
+                type: 'choice',
+                q: 'Какая военная сила играла решающую роль во всех дворцовых переворотах XVIII века?',
+                options: ['Дворянская гвардия', 'Стрелецкое войско', 'Казачество', 'Ополчение'],
+                answer: 0,
+                explanation: 'Преображенский и Семёновский гвардейские полки решали, кто займёт российский престол.'
+              },
+              {
+                type: 'choice',
+                q: 'Кто разорвал «Кондиции» (условия ограничения власти), предложенные Верховным тайным советом в 1730 году?',
+                options: ['Анна Иоанновна', 'Елизавета Петровна', 'Екатерина I', 'Екатерина II'],
+                answer: 0,
+                explanation: 'Опираясь на дворянство и гвардию, Анна Иоанновна разорвала «Кондиции» и восстановила самодержавие.'
+              },
+              {
+                type: 'choice',
+                q: 'Как назывался период засилья иностранцев (особенно немцев) при дворе Анны Иоанновны?',
+                options: ['Бироновщина', 'Опричнина', 'Аракчеевщина', 'Семибоярщина'],
+                answer: 0,
+                explanation: 'По имени фаворита императрицы Эрнста Бирона этот период получил название «бироновщина».'
+              },
+              {
+                type: 'choice',
+                q: 'В каком году при Елизавете Петровне был основан Московский университет (МГУ)?',
+                options: ['1755', '1725', '1762', '1703'],
+                answer: 0,
+                explanation: 'МГУ был основан в 1755 году по инициативе М.В. Ломоносова и И.И. Шувалова.'
+              },
+              {
+                type: 'choice',
+                q: 'Кто из правителей подписал «Манифест о вольности дворянства» в 1762 году?',
+                options: ['Пётр III', 'Пётр II', 'Елизавета Петровна', 'Анна Иоанновна'],
+                answer: 0,
+                explanation: 'Пётр III в феврале 1762 года освободил дворян от обязательной государственной и военной службы.'
+              },
+              {
+                type: 'choice',
+                q: 'Укажите хронологические рамки эпохи дворцовых переворотов в России:',
+                options: ['1725–1762 гг.', '1700–1721 гг.', '1762–1796 гг.', '1598–1613 гг.'],
+                answer: 0,
+                explanation: 'От смерти Петра I (1725) до воцарения Екатерины II (1762).'
+              },
+              {
+                type: 'choice',
+                q: 'В какой крупной европейской войне Россия успешно участвовала в правление Елизаветы Петровны?',
+                options: ['Семилетняя война', 'Северная война', 'Крымская война', 'Ливонская война'],
+                answer: 0,
+                explanation: 'В ходе Семилетней войны (1756–1763) русские войска разгромили армию Фридриха II и даже брали Берлин.'
+              },
+              {
+                type: 'choice',
+                q: 'Кто из правителей этой эпохи был свергнут в младенческом возрасте в 1741 году?',
+                options: ['Иван VI Антонович', 'Пётр II', 'Пётр III', 'Павел I'],
+                answer: 0,
+                explanation: 'Годовалый император Иван VI был свергнут Елизаветой Петровной в ноябре 1741 года.'
+              },
+              {
+                type: 'choice',
+                q: 'Какой государственный орган был создан при Екатерине I в 1726 году и сосредоточил реальную власть в стране?',
+                options: ['Верховный тайный совет', 'Государственная дума', 'Избранная рада', 'Земский собор'],
+                answer: 0,
+                explanation: 'Верховный тайный совет во главе с А.Д. Меншиковым фактически управлял империей.'
+              },
+              {
+                type: 'choice',
+                q: 'Чьей дочерью была императрица Елизавета Петровна?',
+                options: ['Петра I и Екатерины I', 'Ивана V', 'Петра II', 'Алексея Михайловича'],
+                answer: 0,
+                explanation: 'Елизавета Петровна была дочерью Петра Великого и Екатерины I.'
+              }
+            ]
+          },
+          {
+            id: 'hist-catherine2',
+            title: 'Правление Екатерины II: Просвещённый абсолютизм',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Годы правления: 1762–1796 («Золотой век» дворянства)',
+                text: 'Екатерина II пришла к власти в результате переворота против своего мужа Петра III. Проводила политику <b>просвещённого абсолютизма</b> — союза монархов и философов (переписывалась с Вольтером и Дидро).'
+              },
+              {
+                heading: 'Ключевые реформы и события',
+                list: [
+                  '<b>1767–1768 гг.</b> — созыв Уложенной комиссии и написание императрицей «Наказа».',
+                  '<b>1773–1775 гг.</b> — Крестьянская война под предводительством <b>Емельяна Пугачёва</b> (выдавал себя за Петра III).',
+                  '<b>1775 г.</b> — Губернская реформа (страна разделена на 50 губерний для усиления власти на местах).',
+                  '<b>1785 г.</b> — «Жалованная грамота дворянству» и «Жалованная грамота городам».'
+                ]
+              },
+              {
+                heading: 'Внешняя политика',
+                text: 'Две победоносные русско-турецкие войны (полководцы <b>А.В. Суворов</b> и <b>П.А. Румянцев</b>, флотоводец <b>Ф.Ф. Ушаков</b>), присоединение Крыма (<b>1783 г.</b>) и разделы Речи Посполитой.'
+              }
+            ],
+            rhyme: {
+              title: 'Запоминалка про век Екатерины',
+              lines: [
+                'Дворянству — грамота и воля,',
+                'Крестьянам — тяжкая неволя!',
+                'Восстал Емелька Пугачёв,',
+                'Но был разбит в конце концов.',
+                'Суворов славу добывал,',
+                'А Крым российским в восемьдесят третьем стал!'
+              ]
+            },
+            questions: [
+              {
+                type: 'choice',
+                q: 'Укажите годы правления Екатерины II:',
+                options: ['1762–1796 гг.', '1741–1761 гг.', '1796–1801 гг.', '1725–1740 гг.'],
+                answer: 0,
+                explanation: 'Екатерина II правила Россией 34 года — с 1762 по 1796 год.'
+              },
+              {
+                type: 'choice',
+                q: 'Как называлась политика Екатерины II, основанная на идеях французских философов?',
+                options: ['Просвещённый абсолютизм', 'Военный коммунизм', 'Бироновщина', 'Заповедные лета'],
+                answer: 0,
+                explanation: 'Политика сочетания неограниченной монархии с идеями Просвещения называется просвещённым абсолютизмом.'
+              },
+              {
+                type: 'choice',
+                q: 'Кем объявил себя Емельян Пугачёв во время Крестьянской войны 1773–1775 гг.?',
+                options: ['Чудом спасшимся императором Петром III', 'Лжедмитрием IV', 'Сыном Петра I', 'Степаном Разиным'],
+                answer: 0,
+                explanation: 'Пугачёв выдавал себя за «чудом спасшегося» императора Петра III, чтобы привлечь на свою сторону казаков и крестьян.'
+              },
+              {
+                type: 'choice',
+                q: 'В каком году Крым был присоединён к Российской империи?',
+                options: ['1783 г.', '1762 г.', '1799 г.', '1775 г.'],
+                answer: 0,
+                explanation: 'В 1783 году Екатерина II подписала манифест о принятии Крыма в состав России.'
+              },
+              {
+                type: 'choice',
+                q: 'Какой документ 1785 года закрепил привилегии высшего сословия России?',
+                options: ['Жалованная грамота дворянству', 'Соборное уложение', 'Табель о рангах', 'Кондиции'],
+                answer: 0,
+                explanation: '«Жалованная грамота дворянству» (1785) освободила дворян от налогов, телесных наказаний и обязательной службы.'
+              },
+              {
+                type: 'choice',
+                q: 'Какую мощную турецкую крепость штурмом взял А.В. Суворов в 1790 году?',
+                options: ['Измаил', 'Очаков', 'Азов', 'Нарва'],
+                answer: 0,
+                explanation: 'Штурм считавшейся неприступной крепости Измаил стал вершиной полководческого искусства Суворова.'
+              },
+              {
+                type: 'choice',
+                q: 'С каким известным французским философом активно переписывалась Екатерина II?',
+                options: ['Вольтер', 'Аристотель', 'Конфуций', 'Маркс'],
+                answer: 0,
+                explanation: 'Екатерина II много лет вела переписку с Вольтером и Дени Дидро.'
+              },
+              {
+                type: 'choice',
+                q: 'Почему была распущена Уложенная комиссия в 1768 году?',
+                options: ['Началась русско-турецкая война (и разногласия сословий)', 'Комиссия полностью выполнила работу', 'Из-за смерти императрицы', 'По требованию Наполеона'],
+                answer: 0,
+                explanation: 'Формальным поводом послужило начало войны с Турцией в 1768 году.'
+              },
+              {
+                type: 'choice',
+                q: 'На сколько губерний была разделена Россия по Губернской реформе 1775 года?',
+                options: ['На 50 губерний', 'На 8 губерний', 'На 12 коллегий', 'На 100 волостей'],
+                answer: 0,
+                explanation: 'После восстания Пугачёва Екатерина II провела реформу, разделив страну на 50 губерний.'
+              },
+              {
+                type: 'choice',
+                q: 'Какой титул был пожалован Екатерине II Уложенной комиссией?',
+                options: ['Великая, Премудрая, Мать Отечества', 'Тишайшая', 'Освободительница', 'Грозная'],
+                answer: 0,
+                explanation: 'Депутаты Уложенной комиссии поднесли ей титул «Великая, Премудрая, Мать Отечества».'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'russian',
+        name: 'Русский язык',
+        description: 'Односоставные предложения и обособленные члены',
+        color: 'sky',
+        badgeBg: 'bg-sky-50',
+        badgeText: 'text-sky-600',
+        borderHover: 'hover:border-sky-300',
+        iconBg: 'bg-gradient-to-br from-sky-500 to-cyan-600',
+        iconSvg: `<svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg>`,
+        topics: [
+          {
+            id: 'rus-onesided',
+            title: 'Односоставные предложения',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Что такое односоставное предложение?',
+                text: 'Это предложение, в котором грамматическая основа состоит только из <b>одного главного члена</b> (только подлежащего ИЛИ только сказуемого), а второй не нужен для понимания смысла.'
+              },
+              {
+                heading: '4 вида с главным членом — СКАЗУЕМЫМ',
+                list: [
+                  '<b>Определённо-личные:</b> легко подставить <i>я, ты, мы, вы</i>. Пример: <i>«Люблю грозу в начале мая»</i> (глагол 1-го или 2-го лица).',
+                  '<b>Неопределённо-личные:</b> легко подставить <i>они</i> (важно действие, а не кто его делает). Пример: <i>«В дверь постучали»</i> (глагол 3-го лица мн.ч. или прош. вр. мн.ч.).',
+                  '<b>Обобщённо-личные:</b> пословицы и поговорки (действие относится ко всем). Пример: <i>«Цыплят по осени считают»</i>.',
+                  '<b>Безличные:</b> нет и <b>не может быть</b> подлежащего (состояние природы, человека, слова <i>нет, нельзя, нужно</i>). Пример: <i>«Смеркалось. Мне не спится»</i>.'
+                ]
+              },
+              {
+                heading: '1 вид с главным членом — ПОДЛЕЖАЩИМ',
+                text: '<b>Назывные:</b> утверждают наличие предмета или явления. Пример: <i>«Ночь. Улица. Фонарь. Аптека»</i>.'
+              }
+            ],
+            rhyme: {
+              title: 'Шпаргалка по односоставным',
+              lines: [
+                'Подставь «я, ты» и «мы» и «вы» —',
+                'Определённо-личное смотри!',
+                'Подставил «они» — стало всё гармонично,',
+                'Такое зовём неопределённо-личным.',
+                '«Смеркается», «холодно», «нету», «пора» —',
+                'Безличным зовётся такое всегда!',
+                'А если лишь имя предмета звучит («Ночь. Тишина») —',
+                'Назывное оно без сомнения, да!'
+              ]
+            },
+            questions: [
+              {
+                type: 'choice',
+                q: 'Определите вид предложения: «Люблю грозу в начале мая».',
+                options: ['Определённо-личное', 'Неопределённо-личное', 'Безличное', 'Назывное'],
+                answer: 0,
+                explanation: 'Сказуемое «люблю» стоит в форме 1-го лица ед.ч., легко подставить местоимение «я».'
+              },
+              {
+                type: 'choice',
+                q: 'Определите вид предложения: «На улице быстро темнеет».',
+                options: ['Безличное', 'Назывное', 'Определённо-личное', 'Неопределённо-личное'],
+                answer: 0,
+                explanation: 'Описывает состояние природы, подлежащее подставить невозможно — это безличное предложение.'
+              },
+              {
+                type: 'choice',
+                q: 'Определите вид предложения: «Вечер. Тишина. Звёзды».',
+                options: ['Назывное', 'Безличное', 'Двусоставное', 'Неопределённо-личное'],
+                answer: 0,
+                explanation: 'Главный член — только подлежащее, выраженное существительным в им. п. Это назывные предложения.'
+              },
+              {
+                type: 'choice',
+                q: 'Определите вид предложения: «В дверь тихонько постучали».',
+                options: ['Неопределённо-личное', 'Определённо-личное', 'Безличное', 'Назывное'],
+                answer: 0,
+                explanation: 'Глагол в прошедшем времени мн.ч. («постучали»), можно подставить местоимение «они».'
+              },
+              {
+                type: 'choice',
+                q: 'Какое из предложений является безличным?',
+                options: ['Мне сегодня нездоровится.', 'Мы пошли в кино.', 'Позвоните мне вечером!', 'Морозный зимний день.'],
+                answer: 0,
+                explanation: 'В предложении «Мне сегодня нездоровится» нет и не может быть подлежащего («мне» — дополнение в дательном падеже).'
+              },
+              {
+                type: 'choice',
+                q: 'Определите вид предложения: «Без труда не вытащишь и рыбку из пруда».',
+                options: ['Обобщённо-личное', 'Назывное', 'Безличное', 'Двусоставное'],
+                answer: 0,
+                explanation: 'Пословица с глаголом 2-го лица ед.ч., действие относится к любому человеку — обобщённо-личное.'
+              },
+              {
+                type: 'choice',
+                q: 'Какой главный член есть в назывном предложении?',
+                options: ['Только подлежащее', 'Только сказуемое', 'И подлежащее, и сказуемое', 'Ни одного'],
+                answer: 0,
+                explanation: 'В назывных предложениях единственный главный член — подлежащее.'
+              },
+              {
+                type: 'choice',
+                q: 'Определите вид предложения: «У меня нет времени».',
+                options: ['Безличное', 'Назывное', 'Определённо-личное', 'Неопределённо-личное'],
+                answer: 0,
+                explanation: 'Предложения со словом «нет» всегда являются безличными.'
+              },
+              {
+                type: 'choice',
+                q: 'Определите вид предложения: «Идём завтра на каток!»',
+                options: ['Определённо-личное', 'Неопределённо-личное', 'Безличное', 'Назывное'],
+                answer: 0,
+                explanation: 'Сказуемое «идём» (1-е лицо мн.ч.), легко подставляется «мы».'
+              },
+              {
+                type: 'choice',
+                q: 'Определите вид предложения: «В газетах об этом много писали».',
+                options: ['Неопределённо-личное', 'Определённо-личное', 'Безличное', 'Назывное'],
+                answer: 0,
+                explanation: 'Можно подставить «они» (журналисты), важно само действие.'
+              },
+              {
+                type: 'choice',
+                q: 'Является ли предложение «Ночь была тихой» назывным?',
+                options: ['Нет, оно двусоставное (ночь — подлежащее, была тихой — сказуемое)', 'Да, это назывное', 'Да, это безличное', 'Да, это определённо-личное'],
+                answer: 0,
+                explanation: 'Здесь есть и подлежащее (ночь), и составное именное сказуемое (была тихой) — это двусоставное предложение!'
+              },
+              {
+                type: 'choice',
+                q: 'Какое местоимение мысленно подставляется в неопределённо-личное предложение?',
+                options: ['Они', 'Я, ты, мы, вы', 'Оно', 'Никакое'],
+                answer: 0,
+                explanation: 'В неопределённо-личных предложениях подразумевается деятель «они».'
+              }
+            ]
+          },
+          {
+            id: 'rus-isolation',
+            title: 'Обособленные определения и обстоятельства',
+            readTime: '3 мин',
+            summary: [
+              {
+                heading: 'Обособленные определения (Причастный оборот)',
+                text: 'Причастный оборот (причастие + зависимые слова) выделяется запятыми:',
+                list: [
+                  '<b>Всегда</b>, если стоит <b>ПОСЛЕ</b> определяемого слова: <i>«Листья, <u>опавшие с деревьев</u>, шуршали под ногами»</i>.',
+                  '<b>НЕ выделяется</b>, если стоит <b>ПЕРЕД</b> определяемым словом: <i>«<u>Опавшие с деревьев</u> листья шуршали под ногами»</i>.',
+                  '<b>Исключение:</b> выделяется даже перед определяемым словом, если относится к <b>личному местоимению</b> (<i>я, ты, он, мы...</i>): <i>«<u>Уставший после дороги</u>, он сразу уснул»</i>.'
+                ]
+              },
+              {
+                heading: 'Обособленные обстоятельства (Деепричастный оборот)',
+                text: 'Деепричастный оборот и одиночные деепричастия (отвечают на вопросы <i>что делая? что сделав?</i>) обособляются <b>почти ВСЕГДА</b> (независимо от места в предложении!).<br>Пример: <i>«<u>Улыбаясь</u>, она вошла в класс»</i>.'
+              },
+              {
+                heading: 'Когда деепричастие НЕ обособляется',
+                text: 'Если это <b>фразеологизм</b>: <i>бежать сломя голову, работать спустя рукава, сидеть сложа руки</i>.'
+              }
+            ],
+            rhyme: {
+              title: 'Правило оборотов в стихах',
+              lines: [
+                'Причастие с хвостиком после слова стоит —',
+                'Запятая с двух сторон его сторожит!',
+                'А перед словом встало — запятых не надо,',
+                'Лишь местоимению запятая рада!',
+                'Деепричастие — хитрый народ:',
+                'Где бы ни встало — запятую берёт!',
+                'Только фразеологизм не трогай рукой:',
+                '«Работать спустя рукава» — без запятой!'
+              ]
+            },
+            questions: [
+              {
+                type: 'choice',
+                q: 'Нужны ли запятые в предложении: «Книга (1) прочитанная мной летом (2) оказалась очень интересной»?',
+                options: ['Да, на месте 1 и 2', 'Нет, запятые не нужны', 'Только на месте 1', 'Только на месте 2'],
+                answer: 0,
+                explanation: 'Причастный оборот стоит ПОСЛЕ определяемого слова «книга», поэтому выделяется с двух сторон.'
+              },
+              {
+                type: 'choice',
+                q: 'Нужна ли запятая в предложении: «Прочитанная мной летом (1) книга оказалась очень интересной»?',
+                options: ['Нет, не нужна', 'Да, нужна на месте 1', 'Нужна после слова «книга»', 'Нужна после слова «оказалась»'],
+                answer: 0,
+                explanation: 'Причастный оборот стоит ПЕРЕД определяемым существительным «книга» и не имеет добавочного значения причины.'
+              },
+              {
+                type: 'choice',
+                q: 'Нужна ли запятая в предложении: «Обрадованный неожиданной встречей (1) он крепко обнял друга»?',
+                options: ['Да, нужна на месте 1', 'Нет, не нужна', 'Нужна после слова «он»', 'Нужна после слова «обнял»'],
+                answer: 0,
+                explanation: 'Определяемое слово — личное местоимение «он», поэтому причастный оборот обособляется в любой позиции!'
+              },
+              {
+                type: 'choice',
+                q: 'Где нужно поставить запятые: «Ребята (1) весело болтая (2) шли из школы»?',
+                options: ['На месте 1 и 2', 'Запятые не нужны', 'Только на месте 1', 'Только на месте 2'],
+                answer: 0,
+                explanation: '«Весело болтая» — деепричастный оборот, он всегда выделяется запятыми с обеих сторон.'
+              },
+              {
+                type: 'choice',
+                q: 'В каком предложении деепричастный оборот НЕ выделяется запятыми?',
+                options: ['Мальчик бежал по улице сломя голову.', 'Оглянувшись по сторонам, путник пошёл дальше.', 'Снег падал, тихо кружась в воздухе.', 'Закончив уроки, я пошёл гулять.'],
+                answer: 0,
+                explanation: '«Сломя голову» — устойчивый фразеологизм (означает «очень быстро»), поэтому запятая не ставится.'
+              },
+              {
+                type: 'choice',
+                q: 'На какие вопросы отвечает деепричастие?',
+                options: ['Что делая? Что сделав?', 'Какой? Какая? Какие?', 'Кто? Что?', 'Что делать? Что сделать?'],
+                answer: 0,
+                explanation: 'Деепричастие обозначает добавочное действие и отвечает на вопросы «что делая?» и «что сделав?».'
+              },
+              {
+                type: 'choice',
+                q: 'Выберите предложение, в котором правильно расставлены знаки препинания:',
+                options: ['Снег, искрящийся на солнце, слепил глаза.', 'Снег искрящийся на солнце, слепил глаза.', 'Снег, искрящийся на солнце слепил глаза.', 'Искрящийся на солнце, снег слепил глаза.'],
+                answer: 0,
+                explanation: 'Причастный оборот «искрящийся на солнце» стоит после определяемого слова «снег» и выделяется с двух сторон.'
+              },
+              {
+                type: 'choice',
+                q: 'Где нужна запятая: «Он сидел в кресле (1) закрыв глаза (2) и слушал музыку»?',
+                options: ['На месте 1 и 2', 'Запятые не нужны', 'Только на месте 1', 'Только на месте 2'],
+                answer: 0,
+                explanation: 'Деепричастный оборот «закрыв глаза» обособляется с двух сторон, даже если рядом стоит союз «и».'
+              },
+              {
+                type: 'choice',
+                q: 'Чем является в предложении причастный оборот?',
+                options: ['Обособленным (или необособленным) определением', 'Обстоятельством', 'Дополнением', 'Сказуемым'],
+                answer: 0,
+                explanation: 'Причастный оборот отвечает на вопрос «какой?» и является определением.'
+              },
+              {
+                type: 'choice',
+                q: 'Выберите предложение с пунктуационной ошибкой:',
+                options: ['Свежий ветер, дующий с моря приносил прохладу.', 'Дующий с моря свежий ветер приносил прохладу.', 'Ветер, дующий с моря, приносил прохладу.', 'Дуя с моря, ветер приносил прохладу.'],
+                answer: 0,
+                explanation: 'В первом варианте не закрыт причастный оборот: пропущена запятая после слова «моря».'
+              }
+            ]
+          }
+        ]
+      }
+    ];
+
+    // =========================================================================
+    // СОСТОЯНИЕ ПРИЛОЖЕНИЯ (STATE) И LOCALSTORAGE
+    // =========================================================================
+    const STORAGE_KEYS = {
+      GRADE: 'freshstudy_grade',
+      COMPLETED: 'freshstudy_completed_topics',
+      SCORES: 'freshstudy_topic_scores'
+    };
+
+    let state = {
+      grade: localStorage.getItem(STORAGE_KEYS.GRADE) || null,
+      completedTopics: JSON.parse(localStorage.getItem(STORAGE_KEYS.COMPLETED) || '[]'),
+      topicScores: JSON.parse(localStorage.getItem(STORAGE_KEYS.SCORES) || '{}'),
+      view: 'onboarding', // 'onboarding' | 'subjects' | 'topics' | 'lesson'
+      selectedSubjectId: null,
+      selectedTopicId: null,
+      // Состояние текущего тренажера
+      quiz: {
+        currentIndex: 0,
+        score: 0,
+        answered: false,
+        lastCorrect: false,
+        userAnswerDisplay: '',
+        finished: false
+      }
+    };
+
+    // Инициализация при запуске
+    function initApp() {
+      if (state.grade === '8') {
+        state.view = 'subjects';
+      } else {
+        state.view = 'onboarding';
+      }
+      render();
+    }
+
+    // Сохранение прогресса
+    function saveProgress() {
+      localStorage.setItem(STORAGE_KEYS.COMPLETED, JSON.stringify(state.completedTopics));
+      localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(state.topicScores));
+      updateHeaderStats();
+    }
+
+    // Подсчёт общего числа тем
+    function getTotalTopicsCount() {
+      return CURRICULUM_8.reduce((acc, subj) => acc + subj.topics.length, 0);
+    }
+
+    // Обновление счетчиков в шапке
+    function updateHeaderStats() {
+      const header = document.getElementById('app-header');
+      if (state.view === 'onboarding' || !state.grade) {
+        header.classList.add('hidden');
+        return;
+      }
+      header.classList.remove('hidden');
+      document.getElementById('header-grade-badge').textContent = `${state.grade} класс`;
+      document.getElementById('header-progress-count').textContent = state.completedTopics.length;
+      document.getElementById('header-total-topics').textContent = getTotalTopicsCount();
+    }
+
+    // Всплывающее уведомление (замена alert)
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const styles = {
+        info: 'bg-slate-900 text-white border-slate-700',
+        success: 'bg-emerald-600 text-white border-emerald-500',
+        warning: 'bg-indigo-600 text-white border-indigo-500'
+      };
+
+      const icon = type === 'success'
+        ? `<svg class="w-5 h-5 shrink-0 text-emerald-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+        : `<svg class="w-5 h-5 shrink-0 text-indigo-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+
+      toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border text-sm font-medium animate-pop ${styles[type] || styles.info}`;
+      toast.innerHTML = `${icon}<span>${message}</span>`;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'all 0.25s ease';
+        setTimeout(() => toast.remove(), 250);
+      }, 2800);
+    }
+
+    // =========================================================================
+    // НАВИГАЦИЯ
+    // =========================================================================
+    function selectGrade(gradeNum) {
+      if (gradeNum !== 8) {
+        showToast('Этот класс скоро появится! Сейчас доступен 8 класс', 'warning');
+        return;
+      }
+      state.grade = '8';
+      localStorage.setItem(STORAGE_KEYS.GRADE, '8');
+      state.view = 'subjects';
+      showToast('Отлично! Выбран 8 класс', 'success');
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openGradeSelector() {
+      state.view = 'onboarding';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function navigateHome() {
+      if (!state.grade) {
+        state.view = 'onboarding';
+      } else {
+        state.view = 'subjects';
+        state.selectedSubjectId = null;
+        state.selectedTopicId = null;
+      }
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openSubject(subjectId) {
+      state.selectedSubjectId = subjectId;
+      state.view = 'topics';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openTopic(subjectId, topicId) {
+      state.selectedSubjectId = subjectId;
+      state.selectedTopicId = topicId;
+      state.view = 'lesson';
+      resetQuizState();
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetQuizState() {
+      state.quiz = {
+        currentIndex: 0,
+        score: 0,
+        answered: false,
+        lastCorrect: false,
+        userAnswerDisplay: '',
+        finished: false
+      };
+    }
+
+    // =========================================================================
+    // ЛОГИКА ТРЕНАЖЁРА
+    // =========================================================================
+    function getCurrentTopic() {
+      const subj = CURRICULUM_8.find(s => s.id === state.selectedSubjectId);
+      if (!subj) return null;
+      return subj.topics.find(t => t.id === state.selectedTopicId);
+    }
+
+    function handleChoiceAnswer(optionIndex) {
+      if (state.quiz.answered) return;
+      const topic = getCurrentTopic();
+      const question = topic.questions[state.quiz.currentIndex];
+      const isCorrect = optionIndex === question.answer;
+
+      state.quiz.answered = true;
+      state.quiz.lastCorrect = isCorrect;
+      state.quiz.selectedOption = optionIndex;
+      if (isCorrect) state.quiz.score++;
+
+      renderQuizSection();
+    }
+
+    function handleInputAnswer(event) {
+      if (event) event.preventDefault();
+      if (state.quiz.answered) return;
+
+      const inputEl = document.getElementById('quiz-text-input');
+      if (!inputEl) return;
+
+      const rawVal = inputEl.value.trim().toLowerCase().replace(',', '.');
+      if (!rawVal) {
+        showToast('Введи ответ перед проверкой!', 'info');
+        inputEl.focus();
+        return;
+      }
+
+      const topic = getCurrentTopic();
+      const question = topic.questions[state.quiz.currentIndex];
+      const normalizedValid = question.correctText.map(v => v.trim().toLowerCase().replace(',', '.'));
+      const isCorrect = normalizedValid.includes(rawVal);
+
+      state.quiz.answered = true;
+      state.quiz.lastCorrect = isCorrect;
+      state.quiz.userAnswerDisplay = inputEl.value.trim();
+      if (isCorrect) state.quiz.score++;
+
+      renderQuizSection();
+    }
+
+    function nextQuizQuestion() {
+      const topic = getCurrentTopic();
+      if (state.quiz.currentIndex + 1 < topic.questions.length) {
+        state.quiz.currentIndex++;
+        state.quiz.answered = false;
+        state.quiz.lastCorrect = false;
+        state.quiz.selectedOption = null;
+        state.quiz.userAnswerDisplay = '';
+      } else {
+        state.quiz.finished = true;
+        // Сохраняем лучший результат по теме
+        const prevBest = state.topicScores[topic.id] || 0;
+        if (state.quiz.score > prevBest) {
+          state.topicScores[topic.id] = state.quiz.score;
+        }
+        // Если набрано >= 70%, автоматически предлагаем или отмечаем изученным
+        if (state.quiz.score / topic.questions.length >= 0.7 && !state.completedTopics.includes(topic.id)) {
+          state.completedTopics.push(topic.id);
+          showToast('Тема автоматически отмечена как изученная!', 'success');
+        }
+        saveProgress();
+      }
+      renderQuizSection();
+    }
+
+    function restartQuiz() {
+      resetQuizState();
+      renderQuizSection();
+    }
+
+    function toggleTopicCompleted(topicId) {
+      const idx = state.completedTopics.indexOf(topicId);
+      if (idx === -1) {
+        state.completedTopics.push(topicId);
+        showToast('Тема отмечена как изученная!', 'success');
+      } else {
+        state.completedTopics.splice(idx, 1);
+        showToast('Отметка об изучении снята', 'info');
+      }
+      saveProgress();
+      render();
+    }
+
+    // =========================================================================
+    // РЕНДЕР ЭКРАНОВ
+    // =========================================================================
+    function render() {
+      updateHeaderStats();
+      const root = document.getElementById('app-root');
+
+      if (state.view === 'onboarding') {
+        root.innerHTML = renderOnboardingView();
+      } else if (state.view === 'subjects') {
+        root.innerHTML = renderSubjectsView();
+      } else if (state.view === 'topics') {
+        root.innerHTML = renderTopicsView();
+      } else if (state.view === 'lesson') {
+        root.innerHTML = renderLessonView();
+      }
+    }
+
+    // 1. ЭКРАН ВЫБОРА КЛАССА (ONBOARDING)
+    function renderOnboardingView() {
+      const grades = [5, 6, 7, 8, 9, 10, 11];
+      const buttonsHtml = grades.map(g => {
+        const isEighth = g === 8;
+        if (isEighth) {
+          return `
+            <button onclick="selectGrade(8)" class="relative group flex flex-col items-center justify-center p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer border-2 border-emerald-400">
+              <span class="absolute -top-2.5 right-3 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-sm">
+                Доступно
+              </span>
+              <span class="text-3xl sm:text-4xl font-extrabold tracking-tight">${g}</span>
+              <span class="text-xs sm:text-sm font-semibold text-emerald-50 mt-1">класс</span>
+            </button>
+          `;
+        } else {
+          return `
+            <button onclick="selectGrade(${g})" class="relative flex flex-col items-center justify-center p-5 sm:p-6 rounded-2xl bg-white text-slate-400 border border-slate-200/90 hover:border-slate-300 hover:bg-slate-50/80 active:scale-95 transition-all cursor-pointer">
+              <span class="absolute -top-2.5 right-2.5 bg-slate-100 text-slate-500 border border-slate-200 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                Скоро
+              </span>
+              <span class="text-3xl sm:text-4xl font-bold text-slate-500">${g}</span>
+              <span class="text-xs sm:text-sm font-medium text-slate-400 mt-1">класс</span>
+            </button>
+          `;
+        }
+      }).join('');
+
+      return `
+        <div class="min-h-[78vh] flex flex-col items-center justify-center animate-view py-4">
+          <div class="w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200/80 text-center">
+            <!-- Бейдж бренда -->
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-5 border border-indigo-100">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              FreshStudy • Помощник к электронному дневнику
+            </div>
+
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Выбери свой класс, чтобы начать подготовку
+            </h1>
+            <p class="text-slate-500 text-sm sm:text-base mt-3 max-w-lg mx-auto leading-relaxed">
+              Краткие конспекты без воды, запоминалки с рифмами и быстрые тренажёры на 10–12 задач перед контрольной или уроком.
+            </p>
+
+            <!-- Сетка классов -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 mt-8">
+              ${buttonsHtml}
+            </div>
+
+            <p class="text-xs text-slate-400 mt-7">
+              Выбор сохранится автоматически — ты всегда сможешь изменить класс в шапке сайта.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    // 2. ГЛАВНЫЙ ЭКРАН — ВЫБОР ПРЕДМЕТА
+    function renderSubjectsView() {
+      const completedCount = state.completedTopics.length;
+      const totalCount = getTotalTopicsCount();
+      const progressPercent = Math.round((completedCount / totalCount) * 100);
+
+      const cardsHtml = CURRICULUM_8.map(subj => {
+        const subjCompleted = subj.topics.filter(t => state.completedTopics.includes(t.id)).length;
+        const subjTotal = subj.topics.length;
+        const allDone = subjCompleted === subjTotal && subjTotal > 0;
+
+        return `
+          <button onclick="openSubject('${subj.id}')" class="group text-left bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 ${subj.borderHover} shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all flex flex-col justify-between cursor-pointer">
+            <div>
+              <div class="flex items-start justify-between gap-3">
+                <div class="w-12 h-12 rounded-2xl ${subj.iconBg} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                  ${subj.iconSvg}
+                </div>
+                <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${allDone ? 'bg-emerald-100 text-emerald-700' : `${subj.badgeBg} ${subj.badgeText}`}">
+                  ${allDone ? '✓ Всё изучено' : `${subjCompleted} из ${subjTotal} тем`}
+                </span>
+              </div>
+
+              <h2 class="text-lg sm:text-xl font-bold text-slate-900 mt-4 group-hover:text-indigo-700 transition-colors">
+                ${subj.name}
+              </h2>
+              <p class="text-sm text-slate-500 mt-1.5 leading-relaxed">
+                ${subj.description}
+              </p>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-500 group-hover:text-indigo-600 transition-colors">
+              <span>Открыть темы</span>
+              <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      return `
+        <div class="animate-view">
+          <!-- Приветственный баннер с прогрессом -->
+          <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-md mb-7 relative overflow-hidden">
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div>
+                <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-emerald-300 mb-3">
+                  <span>Программа 8 класса</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                  К какому уроку готовимся сегодня?
+                </h1>
+                <p class="text-indigo-100 text-sm sm:text-base mt-1.5 max-w-xl">
+                  Выбери предмет, пробегись по мини-конспекту с рифмой и закрепи материал на задачах.
+                </p>
+              </div>
+
+              <!-- Виджет общего прогресса -->
+              <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4 sm:min-w-[210px]">
+                <div class="flex items-center justify-between text-xs font-semibold text-indigo-100 mb-2">
+                  <span>Твой прогресс</span>
+                  <span class="text-emerald-300 font-bold">${progressPercent}%</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-900/40 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-300 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+                </div>
+                <div class="text-xs text-indigo-200 mt-2">
+                  Изучено <b class="text-white">${completedCount}</b> из <b class="text-white">${totalCount}</b> тем
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Сетка предметов -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            ${cardsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. ЭКРАН СПИСКА ТЕМ ВЫБРАННОГО ПРЕДМЕТА
+    function renderTopicsView() {
+      const subject = CURRICULUM_8.find(s => s.id === state.selectedSubjectId);
+      if (!subject) return navigateHome();
+
+      const topicsHtml = subject.topics.map((topic, index) => {
+        const isDone = state.completedTopics.includes(topic.id);
+        const bestScore = state.topicScores[topic.id];
+        const totalQ = topic.questions.length;
+
+        return `
+          <div onclick="openTopic('${subject.id}', '${topic.id}')" class="group bg-white rounded-2xl p-5 sm:p-6 border ${isDone ? 'border-emerald-200 bg-emerald-50/20' : 'border-slate-200/80'} hover:border-indigo-300 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl ${isDone ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 group-hover:bg-indigo-600 group-hover:text-white'} font-bold text-sm flex items-center justify-center shrink-0 transition-colors">
+                ${isDone ? '✓' : index + 1}
+              </div>
+              <div>
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  <span class="text-xs font-medium text-slate-400">⏱ ${topic.readTime}</span>
+                  <span class="text-slate-300">•</span>
+                  <span class="text-xs font-medium text-indigo-600">${totalQ} задач в тренажёре</span>
+                  ${isDone ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700">Изучена</span>` : ''}
+                </div>
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-indigo-700 transition-colors">
+                  ${topic.title}
+                </h3>
+                ${bestScore !== undefined ? `
+                  <p class="text-xs font-medium text-slate-500 mt-1.5">
+                    Лучший результат в тренажёре: <span class="font-bold text-emerald-600">${bestScore} из ${totalQ}</span>
+                  </p>
+                ` : `
+                  <p class="text-xs text-slate-400 mt-1.5">Тренажёр ещё не пройден</p>
+                `}
+              </div>
+            </div>
+
+            <div class="flex items-center justify-end sm:justify-center shrink-0">
+              <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 group-hover:bg-indigo-600 text-slate-700 group-hover:text-white text-xs sm:text-sm font-semibold transition-colors">
+                <span>Открыть</span>
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="animate-view max-w-3xl mx-auto">
+          <!-- Хлебные крошки / Назад -->
+          <button onclick="navigateHome()" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 mb-5 py-1.5 px-3 -ml-3 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Все предметы</span>
+          </button>
+
+          <!-- Заголовок предмета -->
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl ${subject.iconBg} flex items-center justify-center shadow-sm shrink-0">
+              ${subject.iconSvg}
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider ${subject.badgeText}">8 класс • Предмет</span>
+              <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">${subject.name}</h1>
+              <p class="text-sm text-slate-500 mt-0.5">${subject.description}</p>
+            </div>
+          </div>
+
+          <!-- Список тем -->
+          <div class="space-y-3.5">
+            ${topicsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. ЭКРАН УЧЕБНОГО МОДУЛЯ (КОНСПЕКТ + РИФМА + ТРЕНАЖЁР)
+    function renderLessonView() {
+      const subject = CURRICULUM_8.find(s => s.id === state.selectedSubjectId);
+      const topic = getCurrentTopic();
+      if (!subject || !topic) return navigateHome();
+
+      const isDone = state.completedTopics.includes(topic.id);
+
+      // Рендер блоков мини-конспекта
+      const summaryBlocksHtml = topic.summary.map(block => `
+        <div class="bg-slate-50/90 rounded-2xl p-4 sm:p-5 border border-slate-200/70">
+          <h3 class="text-sm sm:text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+            ${block.heading}
+          </h3>
+          ${block.text ? `<p class="text-sm text-slate-700 leading-relaxed">${block.text}</p>` : ''}
+          ${block.list ? `
+            <ul class="space-y-2 mt-2 text-sm text-slate-700">
+              ${block.list.map(item => `
+                <li class="flex items-start gap-2.5 leading-relaxed">
+                  <span class="text-emerald-500 font-bold mt-0.5">•</span>
+                  <span>${item}</span>
+                </li>
+              `).join('')}
+            </ul>
+          ` : ''}
+        </div>
+      `).join('');
+
+      // Рендер строк рифмы
+      const rhymeLinesHtml = topic.rhyme.lines.map(line => `
+        <p class="text-sm sm:text-base font-medium text-amber-950 leading-relaxed">${line}</p>
+      `).join('');
+
+      return `
+        <div class="animate-view max-w-3xl mx-auto space-y-6 pb-10">
+          <!-- Навигация назад -->
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <button onclick="openSubject('${subject.id}')" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 py-2 px-3.5 -ml-3 rounded-xl hover:bg-white border border-transparent hover:border-slate-200 transition-all cursor-pointer">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              <span>Назад к темам (${subject.name})</span>
+            </button>
+
+            <button onclick="toggleTopicCompleted('${topic.id}')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+              isDone
+                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200/70'
+                : 'bg-white text-slate-700 border border-slate-200 hover:border-emerald-400 hover:text-emerald-700'
+            }">
+              <span>${isDone ? '✓ Тема изучена' : 'Отметить изученной'}</span>
+            </button>
+          </div>
+
+          <!-- Шапка темы -->
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${subject.badgeBg} ${subject.badgeText} mb-2">
+              <span>${subject.name} • 8 класс</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              ${topic.title}
+            </h1>
+          </div>
+
+          <!-- БЛОК 1: МИНИ-КОНСПЕКТ -->
+          <section class="bg-white rounded-3xl p-5 sm:p-7 shadow-sm border border-slate-200/80">
+            <div class="flex items-center gap-2.5 mb-4">
+              <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-lg font-bold text-slate-900">Мини-конспект</h2>
+                <p class="text-xs text-slate-400">Только главное для быстрого повторения</p>
+              </div>
+            </div>
+
+            <div class="space-y-3.5">
+              ${summaryBlocksHtml}
+            </div>
+          </section>
+
+          <!-- БЛОК 2: ЗАПОМИНАЛКА С РИФМОЙ -->
+          <section class="bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 rounded-3xl p-5 sm:p-7 border-2 border-amber-200/80 shadow-sm relative overflow-hidden">
+            <div class="flex items-center gap-2.5 mb-3">
+              <div class="w-9 h-9 rounded-xl bg-amber-400/30 text-amber-800 flex items-center justify-center">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M9 18V5l12-2v13"/>
+                  <circle cx="6" cy="18" r="3"/>
+                  <circle cx="18" cy="16" r="3"/>
+                </svg>
+              </div>
+              <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Мнемоника • Легко запомнить</span>
+                <h2 class="text-base sm:text-lg font-extrabold text-amber-950">${topic.rhyme.title}</h2>
+              </div>
+            </div>
+
+            <div class="bg-white/75 backdrop-blur-sm rounded-2xl p-4 sm:p-5 border border-amber-200/60 space-y-1">
+              ${rhymeLinesHtml}
+            </div>
+          </section>
+
+          <!-- БЛОК 3: ИНТЕРАКТИВНЫЙ ТРЕНАЖЁР -->
+          <section id="quiz-container" class="bg-white rounded-3xl p-5 sm:p-7 shadow-sm border border-slate-200/80">
+            ${getQuizInnerHtml(topic)}
+          </section>
+        </div>
+      `;
+    }
+
+    // Обновление только блока тренажёра без перерисовки всей страницы
+    function renderQuizSection() {
+      const topic = getCurrentTopic();
+      const container = document.getElementById('quiz-container');
+      if (container && topic) {
+        container.innerHTML = getQuizInnerHtml(topic);
+      }
+    }
+
+    // Генерация HTML для блока тренажёра
+    function getQuizInnerHtml(topic) {
+      const total = topic.questions.length;
+      const qState = state.quiz;
+
+      // ЭКРАН РЕЗУЛЬТАТОВ ТРЕНАЖЁРА
+      if (qState.finished) {
+        const percent = Math.round((qState.score / total) * 100);
+        const isDone = state.completedTopics.includes(topic.id);
+
+        let verdictTitle = 'Хорошая попытка!';
+        let verdictSub = 'Пробегись ещё раз по конспекту и попробуй улучшить результат.';
+        let badgeColor = 'bg-amber-100 text-amber-800';
+
+        if (percent >= 80) {
+          verdictTitle = 'Отличный результат! 🔥';
+          verdictSub = 'Ты полностью готов к опросу или контрольной по этой теме!';
+          badgeColor = 'bg-emerald-100 text-emerald-800';
+        } else if (percent >= 50) {
+          verdictTitle = 'Неплохо! 👍';
+          verdictSub = 'База усвоена, но стоит закрепить пару моментов.';
+          badgeColor = 'bg-indigo-100 text-indigo-800';
+        }
+
+        return `
+          <div class="text-center py-4 animate-pop">
+            <div class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold ${badgeColor} mb-3">
+              Тренировка завершена • ${percent}%
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">${verdictTitle}</h2>
+            <p class="text-sm text-slate-500 mt-1.5 max-w-md mx-auto">${verdictSub}</p>
+
+            <div class="my-6 inline-flex items-baseline gap-2 bg-slate-50 px-6 py-4 rounded-2xl border border-slate-200">
+              <span class="text-4xl font-extrabold text-indigo-600">${qState.score}</span>
+              <span class="text-lg font-semibold text-slate-400">из ${total} правильных</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-2">
+              <button onclick="restartQuiz()" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm transition-colors cursor-pointer">
+                ↻ Пройти заново
+              </button>
+              <button onclick="toggleTopicCompleted('${topic.id}')" class="w-full sm:w-auto px-5 py-3 rounded-xl font-semibold text-sm transition-all cursor-pointer ${
+                isDone
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm'
+              }">
+                ${isDone ? '✓ Тема отмечена изученной' : 'Отметить тему изученной'}
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // ТЕКУЩАЯ ЗАДАЧА
+      const currentQ = topic.questions[qState.currentIndex];
+      const progressPct = Math.round(((qState.currentIndex + (qState.answered ? 1 : 0)) / total) * 100);
+
+      let interactionHtml = '';
+
+      if (currentQ.type === 'choice') {
+        interactionHtml = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+            ${currentQ.options.map((opt, idx) => {
+              let btnStyle = 'bg-slate-50 hover:bg-indigo-50/70 border-slate-200 hover:border-indigo-300 text-slate-800';
+              let badgeStyle = 'bg-white text-slate-500 border-slate-200';
+
+              if (qState.answered) {
+                if (idx === currentQ.answer) {
+                  btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 font-semibold';
+                  badgeStyle = 'bg-emerald-500 text-white border-emerald-500';
+                } else if (idx === qState.selectedOption && idx !== currentQ.answer) {
+                  btnStyle = 'bg-rose-50 border-rose-400 text-rose-950';
+                  badgeStyle = 'bg-rose-500 text-white border-rose-500';
+                } else {
+                  btnStyle = 'bg-slate-50/60 border-slate-200/60 text-slate-400 opacity-70';
+                }
+              }
+
+              const letters = ['А', 'Б', 'В', 'Г'];
+              return `
+                <button
+                  onclick="handleChoiceAnswer(${idx})"
+                  ${qState.answered ? 'disabled' : ''}
+                  class="text-left p-3.5 sm:p-4 rounded-2xl border-2 transition-all flex items-center gap-3 ${btnStyle} ${qState.answered ? 'cursor-default' : 'cursor-pointer active:scale-[0.99]'}">
+                  <span class="w-7 h-7 rounded-lg border text-xs font-bold flex items-center justify-center shrink-0 ${badgeStyle}">
+                    ${letters[idx] || idx + 1}
+                  </span>
+                  <span class="text-sm sm:text-base leading-snug">${opt}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } else {
+        // Задача с вводом числа / короткого ответа
+        const correctDisplay = currentQ.correctText[0];
+        interactionHtml = `
+          <form onsubmit="handleInputAnswer(event)" class="mt-4">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <input
+                id="quiz-text-input"
+                type="text"
+                autocomplete="off"
+                placeholder="Введи ответ..."
+                ${qState.answered ? `disabled value="${qState.userAnswerDisplay}"` : ''}
+                class="flex-1 px-4 py-3.5 rounded-2xl border-2 text-base font-semibold focus:outline-none transition-colors ${
+                  qState.answered
+                    ? (qState.lastCorrect ? 'bg-emerald-50 border-emerald-500 text-emerald-900' : 'bg-rose-50 border-rose-400 text-rose-900')
+                    : 'bg-slate-50 border-slate-200 focus:border-indigo-500 focus:bg-white text-slate-900'
+                }"
+              />
+              ${!qState.answered ? `
+                <button type="submit" class="px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold text-sm sm:text-base transition-all cursor-pointer shrink-0">
+                  Проверить
+                </button>
+              ` : ''}
+            </div>
+            ${qState.answered && !qState.lastCorrect ? `
+              <div class="mt-2.5 text-sm font-semibold text-emerald-700">
+                Правильный ответ: <span class="bg-emerald-100 px-2.5 py-0.5 rounded-lg">${correctDisplay}</span>
+              </div>
+            ` : ''}
+          </form>
+        `;
+      }
+
+      // Блок пояснения после ответа
+      const feedbackHtml = qState.answered ? `
+        <div class="mt-5 p-4 rounded-2xl border animate-pop ${
+          qState.lastCorrect
+            ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950'
+            : 'bg-rose-50/90 border-rose-200 text-rose-950'
+        }">
+          <div class="flex items-center gap-2 font-bold text-sm mb-1">
+            <span>${qState.lastCorrect ? '✅ Верно!' : '❌ Не совсем так'}</span>
+          </div>
+          <p class="text-xs sm:text-sm leading-relaxed opacity-90">
+            ${currentQ.explanation}
+          </p>
+          <div class="mt-4 flex justify-end">
+            <button onclick="nextQuizQuestion()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white text-sm font-semibold transition-all cursor-pointer">
+              <span>${qState.currentIndex + 1 < total ? 'Следующая задача' : 'Завершить и узнать результат'}</span>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      ` : '';
+
+      return `
+        <div>
+          <!-- Шапка тренажёра -->
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-lg font-bold text-slate-900">Тренажёр задач</h2>
+                <p class="text-xs text-slate-400">Задача ${qState.currentIndex + 1} из ${total}</p>
+              </div>
+            </div>
+
+            <div class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700">
+              Верно: <span class="text-emerald-600">${qState.score}</span>
+            </div>
+          </div>
+
+          <!-- Прогресс-бар тренажёра -->
+          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-5">
+            <div class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-full transition-all duration-300" style="width: ${progressPct}%"></div>
+          </div>
+
+          <!-- Текст вопроса -->
+          <div class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+            ${currentQ.q}
+          </div>
+
+          <!-- Варианты ответа или поле ввода -->
+          ${interactionHtml}
+
+          <!-- Пояснение и кнопка «Далее» -->
+          ${feedbackHtml}
+        </div>
+      `;
+    }
+
+    // Запуск приложения после загрузки DOM
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
